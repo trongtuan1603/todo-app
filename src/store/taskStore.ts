@@ -1,15 +1,10 @@
 import {create} from 'zustand';
 import EncryptedStorage from 'react-native-encrypted-storage';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-}
+import {ITask} from '../utils/types';
 
 interface TaskStore {
-  tasks: Task[];
-  addTask: (task: Task) => void;
+  tasks: ITask[];
+  addTask: (task: ITask) => void;
   removeTask: (id: string) => void;
   getTasks: () => void;
 }
@@ -36,7 +31,7 @@ const useTaskStore = create<TaskStore>(set => ({
   },
 }));
 
-const saveTasksToStorage = async (tasks: Task[]) => {
+const saveTasksToStorage = async (tasks: ITask[]) => {
   try {
     await EncryptedStorage.setItem('tasks', JSON.stringify(tasks));
   } catch (error) {
