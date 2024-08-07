@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     fontSize: 14,
-    color: Colors.gray,
+    color: Colors.grayText,
     marginBottom: 8,
     fontFamily: 'Inter-Regular',
   },

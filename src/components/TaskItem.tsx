@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: Colors.black,
+    fontFamily: 'Inter-Medium',
   },
   completedTitle: {
     textDecorationLine: 'line-through',

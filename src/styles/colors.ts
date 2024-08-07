@@ -11,5 +11,6 @@ const Colors = {
   black: '#000000',
   grayBackground: '#f6f6f6',
   gray: '#969696',
+  grayText: '#404040',
 };
 export default Colors;
