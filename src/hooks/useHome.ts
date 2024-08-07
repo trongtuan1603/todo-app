@@ -3,7 +3,10 @@ import useTaskStore from '../store/taskStore';
 import {ITask} from '../utils/types';
 
 const useHome = () => {
-  const {tasks, getTasks, removeTask} = useTaskStore();
+  const {getTasks, removeTask, updateTaskStatus, updateTasksList} =
+    useTaskStore();
+  const incompleteTasks = useTaskStore(state => state.getIncompleteTasks());
+  const completedTasks = useTaskStore(state => state.getCompletedTasks());
 
   useEffect(() => {
     getTasks();
@@ -13,9 +16,20 @@ const useHome = () => {
     removeTask(task.id);
   };
 
+  const handleReorderTask = (updatedTasks: ITask[]) => {
+    updateTasksList([...updatedTasks, ...completedTasks]);
+  };
+
+  const handleToggleStatus = (task: ITask) => {
+    updateTaskStatus(task.id);
+  };
+
   return {
-    tasks,
+    incompleteTasks,
+    completedTasks,
     handleRemoveTask,
+    handleReorderTask,
+    handleToggleStatus,
   };
 };
 

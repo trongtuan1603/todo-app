@@ -1,21 +1,50 @@
 import React from 'react';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ITask} from '../utils/types';
 import CheckBox from '@react-native-community/checkbox';
+import Colors from '../styles/colors';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type TaskItemProps = {
-  onCheckDone: (task: ITask) => void;
+  onToggleStatus?: (task: ITask) => void;
   onRemoveTask: (task: ITask) => void;
+  onLongPress?: () => void;
+  isDragging?: boolean;
   data: ITask;
 };
 
-const TaskItem = ({onRemoveTask, data}: TaskItemProps) => {
+const TaskItem = ({
+  data,
+  isDragging,
+  onLongPress,
+  onToggleStatus,
+}: TaskItemProps) => {
   return (
-    <View style={styles.taskItem}>
-      <CheckBox />
-      <Text style={styles.taskTitle}>{data.title}</Text>
-      <Button title="Remove" onPress={() => onRemoveTask(data)} />
-    </View>
+    <TouchableOpacity
+      style={[
+        styles.taskItem,
+        isDragging && styles.taskItemDragging,
+        data.isCompleted && styles.completedStyle,
+      ]}
+      onLongPress={onLongPress}>
+      <CheckBox
+        value={data.isCompleted}
+        onChange={_ => {
+          onToggleStatus?.(data);
+        }}
+        tintColors={{true: Colors.primary, false: Colors.gray}}
+      />
+      <View style={styles.taskInfo}>
+        <Text
+          style={[styles.taskTitle, data.isCompleted && styles.completedTitle]}
+          numberOfLines={1}>
+          {data.title}
+        </Text>
+      </View>
+      <TouchableOpacity style={styles.optionButton}>
+        <Ionicons name="ellipsis-vertical" />
+      </TouchableOpacity>
+    </TouchableOpacity>
   );
 };
 
@@ -24,11 +53,38 @@ export default TaskItem;
 const styles = StyleSheet.create({
   taskItem: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingLeft: 14,
+    height: 45,
     alignItems: 'center',
   },
+  taskItemDragging: {
+    opacity: 0.5,
+    backgroundColor: Colors.white,
+  },
   taskTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.black,
+  },
+  completedTitle: {
+    textDecorationLine: 'line-through',
+  },
+  taskInfo: {
     flex: 1,
+    justifyContent: 'flex-end',
+    marginLeft: 2,
+  },
+  description: {
+    fontSize: 12,
+    color: Colors.black,
+  },
+  optionButton: {
+    height: 40,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  completedStyle: {
+    opacity: 0.4,
   },
 });

@@ -28,11 +28,16 @@ const useAddTask = (props: AddTaskHookProps) => {
 
   const onSubmit = () => {
     Keyboard.dismiss();
-    addTask({
+    const newTask = {
       id: Date.now().toString(),
       title: title,
       description: description,
-    });
+      isCompleted: false,
+    };
+    addTask(newTask);
+
+    setTitle('');
+    setDescription('');
     props.onCloseModal();
   };
 

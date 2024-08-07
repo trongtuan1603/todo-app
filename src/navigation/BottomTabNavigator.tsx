@@ -7,6 +7,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs/src/types';
 import {RouteName} from '../utils/constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import AddTaskModal from '../components/AddTaskModal';
 
 type CustomTabBarProps = {
@@ -112,7 +113,7 @@ const CustomTabBar: React.FC<BottomTabBarProps & CustomTabBarProps> = ({
             style={{flex: 1, alignItems: 'center'}}>
             {index == 1 ? (
               <View style={styles.addTaskButton}>
-                <Ionicons name="add" size={20} color={Colors.primary} />
+                <FontAwesome6 name="plus" size={16} color={Colors.primary} />
               </View>
             ) : (
               <View style={styles.tabButton}>
@@ -172,6 +173,13 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowRadius: 4,
+    shadowOffset: {
+      width: 0,
+      height: -3,
+    },
+    shadowColor: Colors.black,
+    elevation: 12,
   },
   addTaskButton: {
     height: 35,

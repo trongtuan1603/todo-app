@@ -9,5 +9,7 @@ const Colors = {
   primary8: '#EDE5F6',
   white: '#ffffff',
   black: '#000000',
+  grayBackground: '#f6f6f6',
+  gray: '#969696',
 };
 export default Colors;

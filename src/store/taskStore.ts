@@ -6,10 +6,14 @@ interface TaskStore {
   tasks: ITask[];
   addTask: (task: ITask) => void;
   removeTask: (id: string) => void;
+  updateTaskStatus: (id: string) => void;
   getTasks: () => void;
+  updateTasksList: (task: ITask[]) => void;
+  getIncompleteTasks: () => ITask[];
+  getCompletedTasks: () => ITask[];
 }
 
-const useTaskStore = create<TaskStore>(set => ({
+const useTaskStore = create<TaskStore>((set, get) => ({
   tasks: [],
   addTask: async task => {
     set(state => {
@@ -29,6 +33,32 @@ const useTaskStore = create<TaskStore>(set => ({
     const tasks = await getTasksFromStorage();
     set({tasks: tasks || []});
   },
+
+  updateTaskStatus: async (id: string) => {
+    set(state => {
+      const completeIndex = state.tasks.findIndex(task => task.id === id);
+      const updatedTasks = [...state.tasks];
+
+      if (completeIndex > -1) {
+        updatedTasks[completeIndex].isCompleted =
+          !updatedTasks[completeIndex].isCompleted;
+        updatedTasks.push(updatedTasks.splice(completeIndex, 1)[0]);
+      }
+
+      saveTasksToStorage(updatedTasks);
+      return {tasks: updatedTasks};
+    });
+  },
+
+  updateTasksList: async (updatedTasks: ITask[]) => {
+    set(state => {
+      saveTasksToStorage(updatedTasks);
+      return {tasks: updatedTasks};
+    });
+  },
+
+  getIncompleteTasks: () => get().tasks.filter(task => !task.isCompleted),
+  getCompletedTasks: () => get().tasks.filter(task => task.isCompleted),
 }));
 
 const saveTasksToStorage = async (tasks: ITask[]) => {
