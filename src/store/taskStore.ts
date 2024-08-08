@@ -11,6 +11,9 @@ interface TaskStore {
   updateTasksList: (task: ITask[]) => void;
   getIncompleteTasks: () => ITask[];
   getCompletedTasks: () => ITask[];
+  getTask: (id: string) => ITask | undefined;
+  updateTask: (task: ITask) => void;
+  updateImportant: (id: string, isImportant: boolean) => void;
 }
 
 const useTaskStore = create<TaskStore>((set, get) => ({
@@ -57,6 +60,27 @@ const useTaskStore = create<TaskStore>((set, get) => ({
     });
   },
 
+  updateTask: async (task: ITask) => {
+    set(state => {
+      const taskIndex = state.tasks.findIndex(t => t.id === task.id);
+      const updateTasks = [...state.tasks];
+      updateTasks[taskIndex] = task;
+      saveTasksToStorage(updateTasks);
+      return {tasks: updateTasks};
+    });
+  },
+
+  updateImportant: async (id, isImportant) => {
+    set(state => {
+      const taskIndex = state.tasks.findIndex(t => t.id === id);
+      const updateTasks = [...state.tasks];
+      updateTasks[taskIndex].important = isImportant;
+      saveTasksToStorage(updateTasks);
+      return {tasks: updateTasks};
+    });
+  },
+
+  getTask: id => get().tasks.find(task => task.id === id),
   getIncompleteTasks: () => get().tasks.filter(task => !task.isCompleted),
   getCompletedTasks: () => get().tasks.filter(task => task.isCompleted),
 }));

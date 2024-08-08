@@ -4,6 +4,7 @@ import {ITask} from '../utils/types';
 import CheckBox from '@react-native-community/checkbox';
 import Colors from '../styles/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 type TaskItemProps = {
   onToggleStatus?: (task: ITask) => void;
@@ -11,6 +12,9 @@ type TaskItemProps = {
   onLongPress?: () => void;
   isDragging?: boolean;
   data: ITask;
+  onPress: (task: ITask) => void;
+  onOptionsPress: (id: string) => void;
+  onUpdateTaskImportant: (task: ITask) => void;
 };
 
 const TaskItem = ({
@@ -18,7 +22,12 @@ const TaskItem = ({
   isDragging,
   onLongPress,
   onToggleStatus,
+  onPress,
+  onOptionsPress,
+  onUpdateTaskImportant,
 }: TaskItemProps) => {
+  const isImportantTask = !!data.important;
+
   return (
     <TouchableOpacity
       style={[
@@ -26,6 +35,7 @@ const TaskItem = ({
         isDragging && styles.taskItemDragging,
         data.isCompleted && styles.completedStyle,
       ]}
+      onPress={() => onPress(data)}
       onLongPress={onLongPress}>
       <CheckBox
         value={data.isCompleted}
@@ -41,7 +51,18 @@ const TaskItem = ({
           {data.title}
         </Text>
       </View>
-      <TouchableOpacity style={styles.optionButton}>
+      <TouchableOpacity
+        hitSlop={{top: 5, bottom: 5, left: 5, right: 5}}
+        onPress={() => onUpdateTaskImportant(data)}>
+        <FontAwesome
+          name={isImportantTask ? 'star' : 'star-o'}
+          color={isImportantTask ? Colors.primary : undefined}
+          size={16}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.optionButton}
+        onPress={() => onOptionsPress(data.id)}>
         <Ionicons name="ellipsis-vertical" />
       </TouchableOpacity>
     </TouchableOpacity>

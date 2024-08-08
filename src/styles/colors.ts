@@ -12,5 +12,6 @@ const Colors = {
   grayBackground: '#f6f6f6',
   gray: '#969696',
   grayText: '#404040',
+  blueWhiteBg: '#ecf4fc',
 };
 export default Colors;
