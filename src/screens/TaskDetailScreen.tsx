@@ -33,6 +33,7 @@ const TaskDetailScreen = () => {
   if (task == null) return null;
 
   const isImportantTask = !!task.important;
+  const dateStr = moment(task.date).format('DD-MM-YYYY');
 
   return (
     <ScrollView style={styles.container}>
@@ -61,6 +62,7 @@ const TaskDetailScreen = () => {
         </View>
       </View>
       <View style={styles.content}>
+        <Text style={styles.dateText}>{dateStr}</Text>
         <View style={styles.titleRow}>
           <CheckBox
             value={task.isCompleted}
@@ -160,5 +162,13 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     marginTop: 10,
+  },
+  dateText: {
+    textAlign: 'center',
+    width: '100%',
+    alignSelf: 'center',
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grayBackground,
   },
 });
