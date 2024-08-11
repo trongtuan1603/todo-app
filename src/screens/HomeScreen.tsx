@@ -5,7 +5,8 @@ import Colors from '../styles/colors';
 import TaskList from '../components/TaskList';
 
 const HomeScreen = () => {
-  return <TaskList />;
+  const currentDate = new Date();
+  return <TaskList date={currentDate} />;
 };
 
 export default HomeScreen;

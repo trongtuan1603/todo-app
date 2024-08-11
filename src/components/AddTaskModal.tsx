@@ -24,6 +24,7 @@ const AddTaskModal = ({isVisible, onCloseModal}: AddTaskModalProps) => {
     onSubmit,
     onBackdropPress,
     titleInputRef,
+    onModalShow,
   } = useAddTask({
     onCloseModal,
   });
@@ -33,6 +34,7 @@ const AddTaskModal = ({isVisible, onCloseModal}: AddTaskModalProps) => {
       isVisible={isVisible}
       style={styles.modal}
       useNativeDriver
+      onModalShow={onModalShow}
       onBackdropPress={onBackdropPress}>
       <View style={styles.container}>
         <TextInput
@@ -44,7 +46,6 @@ const AddTaskModal = ({isVisible, onCloseModal}: AddTaskModalProps) => {
           cursorColor={Colors.primary}
         />
         <TextInput
-          ref={titleInputRef}
           value={description}
           onChangeText={onDescriptionChanged}
           style={styles.descriptionTextInput}

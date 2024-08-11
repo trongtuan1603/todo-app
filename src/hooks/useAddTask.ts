@@ -33,6 +33,7 @@ const useAddTask = (props: AddTaskHookProps) => {
       title: title,
       description: description,
       isCompleted: false,
+      date: new Date().toISOString(),
     };
     addTask(newTask);
 
@@ -46,6 +47,10 @@ const useAddTask = (props: AddTaskHookProps) => {
     props.onCloseModal();
   };
 
+  const onModalShow = () => {
+    titleInputRef.current?.focus();
+  };
+
   return {
     title,
     description,
@@ -55,6 +60,7 @@ const useAddTask = (props: AddTaskHookProps) => {
     onTitleChanged,
     onDescriptionChanged,
     onSubmit,
+    onModalShow,
   };
 };
 

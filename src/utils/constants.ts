@@ -1,7 +1,7 @@
 const RouteName = {
   AddTask: 'AddTask',
   Today: 'Today',
-  All: 'All',
+  All: 'All Tasks',
 };
 
 export {RouteName};

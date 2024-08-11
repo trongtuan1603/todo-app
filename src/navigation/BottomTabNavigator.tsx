@@ -52,7 +52,13 @@ const BottomTabNavigator = () => {
           name={RouteName.AddTask}
           component={AddTaskScreenComponent}
         />
-        <Tab.Screen name={RouteName.All} component={AllScreen} />
+        <Tab.Screen
+          name={RouteName.All}
+          component={AllScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Tab.Navigator>
       <AddTaskModal isVisible={showAddTaskModal} onCloseModal={onCloseModal} />
     </>
@@ -201,6 +207,9 @@ const styles = StyleSheet.create({
     fontSize: 9,
     position: 'absolute',
     fontWeight: 'bold',
+  },
+  calendarHeaderButton: {
+    padding: 20,
   },
 });
 

@@ -8,12 +8,12 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 type TaskItemProps = {
   onToggleStatus?: (task: ITask) => void;
-  onRemoveTask: (task: ITask) => void;
+  onRemoveTask: (taskId: string) => void;
   onLongPress?: () => void;
   isDragging?: boolean;
   data: ITask;
   onPress: (task: ITask) => void;
-  onOptionsPress: (id: string) => void;
+  onOptionsPress: (task: ITask) => void;
   onUpdateTaskImportant: (task: ITask) => void;
 };
 
@@ -62,7 +62,7 @@ const TaskItem = ({
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.optionButton}
-        onPress={() => onOptionsPress(data.id)}>
+        onPress={() => onOptionsPress(data)}>
         <Ionicons name="ellipsis-vertical" />
       </TouchableOpacity>
     </TouchableOpacity>
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     marginLeft: 2,
+    paddingRight: 10,
   },
   description: {
     fontSize: 12,

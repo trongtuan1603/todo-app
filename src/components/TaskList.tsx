@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import {
   NestableDraggableFlatList,
   NestableScrollContainer,
@@ -16,6 +16,11 @@ import {
   gestureHandlerRootHOC,
 } from 'react-native-gesture-handler';
 import TaskActionSheet from '../components/TaskActionSheet';
+import Images from '../assets/images';
+import {FadeInRight, FadeOutRight} from 'react-native-reanimated';
+import DatePicker from 'react-native-date-picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import moment from 'moment';
 
 type TaskListProps = {
   date?: Date;
@@ -26,13 +31,17 @@ const TaskList = ({date}: TaskListProps) => {
     incompleteTasks,
     completedTasks,
     taskActionSheetRef,
+    showEditDate,
     handleRemoveTask,
     handleReorderTask,
     handleToggleStatus,
     handleTaskPress,
     handleTaskOptionsPress,
     handleUpdateTaskImportant,
-  } = useTaskList();
+    setShowEditDate,
+    onShowEditDate,
+    handleEditDate,
+  } = useTaskList({date});
 
   const renderIncompleteItem = ({
     item,
@@ -79,7 +88,12 @@ const TaskList = ({date}: TaskListProps) => {
 
   const IncompleteEmptyComponent = () => {
     return (
-      <View style={styles.emptyIncompleteContainer}>
+      <View
+        style={[
+          styles.emptyIncompleteContainer,
+          completedTasks.length == 0 && {flex: 1},
+        ]}>
+        <Image source={Images.noTasks} style={styles.emptyImg} />
         <Text style={styles.noTasks}>No tasks left</Text>
         <Text style={styles.noTasksDesc}>
           {
@@ -92,8 +106,8 @@ const TaskList = ({date}: TaskListProps) => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View style={styles.listInCompleteContainer}>
-        <NestableScrollContainer>
+      <NestableScrollContainer>
+        <View style={styles.listInCompleteContainer}>
           <NestableDraggableFlatList
             data={incompleteTasks}
             renderItem={renderIncompleteItem}
@@ -102,15 +116,38 @@ const TaskList = ({date}: TaskListProps) => {
             renderPlaceholder={renderPlaceholder}
             ListEmptyComponent={<IncompleteEmptyComponent />}
           />
-        </NestableScrollContainer>
-      </View>
-      {completedTasks.length > 0 && (
-        <View style={styles.listContainer}>
-          <Text style={styles.listHeader}>Completed</Text>
-          <FlatList data={completedTasks} renderItem={renderCompletedItem} />
         </View>
-      )}
-      <TaskActionSheet ref={taskActionSheetRef} />
+        {completedTasks.length > 0 && (
+          <View style={styles.listContainer}>
+            <Text style={styles.listHeader}>Completed</Text>
+            <FlatList
+              data={completedTasks}
+              scrollEnabled={false}
+              renderItem={renderCompletedItem}
+            />
+          </View>
+        )}
+      </NestableScrollContainer>
+      <TaskActionSheet
+        ref={taskActionSheetRef}
+        onRemoveTask={handleRemoveTask}
+        onEditDate={onShowEditDate}
+        onSetReminder={() => {}}
+      />
+      <DateTimePickerModal
+        isVisible={showEditDate?.show}
+        mode="date"
+        onConfirm={date => {
+          setShowEditDate(preVal => {
+            return {...preVal, show: false};
+          });
+          handleEditDate(showEditDate!.task?.id!, date.toISOString());
+        }}
+        onCancel={() => {
+          setShowEditDate(undefined);
+        }}
+        date={moment(showEditDate?.task?.date).toDate()}
+      />
     </GestureHandlerRootView>
   );
 };
@@ -120,17 +157,18 @@ export default TaskList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.blueWhiteBg,
+    backgroundColor: Colors.white,
   },
   listInCompleteContainer: {
     padding: 14,
-    shadowColor: Colors.black,
-    shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 0.4,
-    shadowRadius: 2,
-    elevation: 2,
+    // shadowColor: Colors.black,
+    // shadowOffset: {width: 1, height: 1},
+    // shadowOpacity: 0.4,
+    // shadowRadius: 2,
+    // elevation: 2,
     backgroundColor: Colors.white,
-    marginBottom: 10,
+    // marginBottom: 10,
+    flex: 1,
   },
   listContainer: {
     padding: 14,
@@ -165,7 +203,13 @@ const styles = StyleSheet.create({
   noTasksDesc: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: Colors.black,
+    color: Colors.grayText,
     textAlign: 'center',
+    lineHeight: 21,
+  },
+  emptyImg: {
+    marginBottom: 10,
+    height: 170,
+    width: 170,
   },
 });

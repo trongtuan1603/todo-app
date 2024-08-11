@@ -11,16 +11,23 @@ import useTaskDetail from '../hooks/useTaskDetail';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Colors from '../styles/colors';
 import CheckBox from '@react-native-community/checkbox';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {EditDateState} from '../utils/types';
+import moment from 'moment';
 
 const TaskDetailScreen = () => {
   const {
     task,
+    showEditDate,
+    handleEditDate,
+    setShowEditDate,
     onGoBack,
     handleToggleStatus,
     onUpdateTaskTitle,
     onUpdateTaskDescription,
     handleRemoveTask,
     handleUpdateTaskImportant,
+    onShowEditDate,
   } = useTaskDetail();
 
   if (task == null) return null;
@@ -34,6 +41,11 @@ const TaskDetailScreen = () => {
           <FontAwesome name="angle-left" size={30} />
         </TouchableOpacity>
         <View style={styles.headerRightContainer}>
+          <TouchableOpacity
+            onPress={onShowEditDate}
+            style={styles.headerEditDateBtn}>
+            <FontAwesome name="calendar" size={18} />
+          </TouchableOpacity>
           <TouchableOpacity onPress={handleUpdateTaskImportant}>
             <FontAwesome
               name={isImportantTask ? 'star' : 'star-o'}
@@ -52,6 +64,7 @@ const TaskDetailScreen = () => {
         <View style={styles.titleRow}>
           <CheckBox
             value={task.isCompleted}
+            style={styles.checkbox}
             onChange={_ => handleToggleStatus(task)}
             tintColors={{true: Colors.primary, false: Colors.gray}}
           />
@@ -62,6 +75,7 @@ const TaskDetailScreen = () => {
               styles.taskTitle,
               task.isCompleted && styles.completedTitle,
             ]}
+            multiline
           />
         </View>
         <TextInput
@@ -69,8 +83,23 @@ const TaskDetailScreen = () => {
           value={task.description}
           onChangeText={onUpdateTaskDescription}
           multiline
+          textAlignVertical="top"
         />
       </View>
+      <DateTimePickerModal
+        isVisible={showEditDate?.show}
+        mode="date"
+        onConfirm={date => {
+          setShowEditDate(preVal => {
+            return {...preVal, show: false};
+          });
+          handleEditDate(showEditDate!.task?.id!, date.toISOString());
+        }}
+        onCancel={() => {
+          setShowEditDate(undefined);
+        }}
+        date={moment(showEditDate?.task?.date).toDate()}
+      />
     </ScrollView>
   );
 };
@@ -94,9 +123,13 @@ const styles = StyleSheet.create({
   },
   headerRightContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   headerDeleteBtn: {
     marginLeft: 25,
+  },
+  headerEditDateBtn: {
+    marginRight: 25,
   },
   content: {
     flex: 1,
@@ -107,12 +140,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     marginLeft: 3,
     color: Colors.black,
-    width: '100%',
     textDecorationLine: 'none',
+    marginRight: 30,
   },
   titleRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   completedTitle: {
     textDecorationLine: 'line-through',
@@ -123,5 +156,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: Colors.black,
+    minHeight: 300,
+  },
+  checkbox: {
+    marginTop: 10,
   },
 });

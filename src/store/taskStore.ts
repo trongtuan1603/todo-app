@@ -1,16 +1,19 @@
 import {create} from 'zustand';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {ITask} from '../utils/types';
+import moment from 'moment';
 
 interface TaskStore {
   tasks: ITask[];
-  addTask: (task: ITask) => void;
+  addTask: (task: ITask, index?: number) => void;
   removeTask: (id: string) => void;
   updateTaskStatus: (id: string) => void;
+  updateTaskDate: (id: string, date: string) => void;
   getTasks: () => void;
   updateTasksList: (task: ITask[]) => void;
-  getIncompleteTasks: () => ITask[];
-  getCompletedTasks: () => ITask[];
+  getIncompleteTasks: (date?: string) => ITask[];
+  getCompletedTasks: (date?: string) => ITask[];
+  getOverdueTasks: () => ITask[];
   getTask: (id: string) => ITask | undefined;
   updateTask: (task: ITask) => void;
   updateImportant: (id: string, isImportant: boolean) => void;
@@ -18,11 +21,17 @@ interface TaskStore {
 
 const useTaskStore = create<TaskStore>((set, get) => ({
   tasks: [],
-  addTask: async task => {
+  addTask: async (task, index) => {
     set(state => {
-      const updatedTasks = [...state.tasks, task];
-      saveTasksToStorage(updatedTasks);
-      return {tasks: updatedTasks};
+      const currentTasks = [...state.tasks];
+
+      if (index) {
+        currentTasks.splice(index, 0, task);
+      } else {
+        currentTasks.unshift(task);
+      }
+      saveTasksToStorage(currentTasks);
+      return {tasks: currentTasks};
     });
   },
   removeTask: async id => {
@@ -46,6 +55,21 @@ const useTaskStore = create<TaskStore>((set, get) => ({
         updatedTasks[completeIndex].isCompleted =
           !updatedTasks[completeIndex].isCompleted;
         updatedTasks.push(updatedTasks.splice(completeIndex, 1)[0]);
+      }
+
+      saveTasksToStorage(updatedTasks);
+      return {tasks: updatedTasks};
+    });
+  },
+
+  updateTaskDate: async (id: string, date: string) => {
+    set(state => {
+      const updateIndex = state.tasks.findIndex(task => task.id === id);
+      const updatedTasks = [...state.tasks];
+
+      if (updateIndex > -1) {
+        updatedTasks[updateIndex].date = date;
+        updatedTasks.push(updatedTasks.splice(updateIndex, 1)[0]);
       }
 
       saveTasksToStorage(updatedTasks);
@@ -81,8 +105,21 @@ const useTaskStore = create<TaskStore>((set, get) => ({
   },
 
   getTask: id => get().tasks.find(task => task.id === id),
-  getIncompleteTasks: () => get().tasks.filter(task => !task.isCompleted),
-  getCompletedTasks: () => get().tasks.filter(task => task.isCompleted),
+  getIncompleteTasks: (date?: string) =>
+    get().tasks.filter(
+      task =>
+        !task.isCompleted && moment(task.date).isSame(moment(date), 'date'),
+    ),
+  getCompletedTasks: (date?: string) =>
+    get().tasks.filter(
+      task =>
+        task.isCompleted && moment(task.date).isSame(moment(date), 'date'),
+    ),
+
+  getOverdueTasks: () =>
+    get().tasks.filter(
+      task => !task.isCompleted && moment(task.date).isBefore(moment(), 'date'),
+    ),
 }));
 
 const saveTasksToStorage = async (tasks: ITask[]) => {

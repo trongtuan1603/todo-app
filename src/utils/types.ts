@@ -15,4 +15,10 @@ export type ITask = {
   description: string;
   isCompleted: boolean;
   important?: boolean;
+  date: string;
 };
+
+export interface EditDateState {
+  show: boolean;
+  task?: ITask;
+}
